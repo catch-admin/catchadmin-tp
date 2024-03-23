@@ -1,79 +1,78 @@
-![](https://www.thinkphp.cn/uploads/images/20230630/300c856765af4d8ae758c503185f8739.png)
+## 介绍
+这是 TP 项目仓库，目前正在开发中...
 
-ThinkPHP 8.0
-===============
+## 专业版
+[专业版本官方地址](https://license.catchadmin.com)
 
-## 特性
+首先感谢一直以来对 `CatchAdmin` 开源项目的支持和使用。作为一名开源工作者，我一直致力于开发出功能强大且易于使用的后台管理系统，以帮助您简化业务流程和提升工作效率。然而，由于某些原因，我不得不做出一些调整。为了能够继续开发和维护这个项目，我将推出一款付费的后台管理系统，以确保我能够持续为您提供高质量的服务和支持。
 
-* 基于PHP`8.0+`重构
-* 升级`PSR`依赖
-* 依赖`think-orm`3.0版本
-* `6.0`/`6.1`无缝升级
+专业版本不会在开源版本做一些破坏性变更，所以当您从开源版本切换到专业版本，不会有任何开发心智负担。但是使用专业版本会有新的组件来配合您的工作。
+
+我深信，付费后台管理系统将为您带来更多的价值和便利，帮助您提升工作效率
+
+## 功能
+- [x] 用户管理 后台用户管理
+- [x] 部门管理 配置公司的部门结构，支持树形结构
+- [x] 岗位管理 配置后台用户的职务
+- [x] 菜单管理 配置系统菜单，按钮等等
+- [x] 角色管理 配置用户担当的角色，分配权限
+- [x] 操作日志 后台用户操作记录
+- [x] 登录日志 后台系统用户的登录记录
+- [x] 代码生成 生成 API 端的 CURD 操作
+- [x] Schema 管理 生成表结构
+
+## 讨论
+- 可以提 `ISSUE`，请按照 `issue` 模板提问
+- 加入 Q 群 `302266230` 暗号 `catchadmin`。
+- 加微信入群，新建🆕
+
+<img src="wechat.png" width="300"/>
+
+## 项目地址
+- [github catchadmin](https://github.com/jaguarjack/catch-admin)
+## 文档地址
+- [文档地址](https://catchadmin.com/docs/3.0/intro)
+## 预览
+
+![zRrjNd.png](https://i.imgtg.com/2023/02/16/dASpg.png)
+![zRsAEQ.png](https://i.imgtg.com/2023/02/16/dAsKK.png)
+![zRsUv6.png](https://i.imgtg.com/2023/02/16/dA0fB.png)
+![zRsV4s.png](https://i.imgtg.com/2023/02/16/dAd5s.png)
+
+## 体验地址
+[demo 地址](https://v3.catchadmin.com)
+- 账户: `catch@admin.com`
+- 密码: `catchadmin`
+
+## 视频教程(😂记得一键三连哦)
+- [catchadmin 安装](https://www.bilibili.com/video/BV1eY411v71J/)
+- [catchadmin 开发之模块创建](https://www.bilibili.com/video/BV1jP41127aW/)
+- [catchadmin 之快速开发](https://www.bilibili.com/video/BV1Qh4y1J7eB/)
+
+## 规范
+### PHP
+使用 fixer 进行代码检查, 具体请查看根目录下 `.php-cs-fixer.dist.php` 文件的规范，还需要进行以下两步骤
+```shell
+mkdir path
+```
+```shell
+composer require --working-dir=path friendsofphp/php-cs-fixer                                                                                      
+```
+安装完成之后可以使用
+```shell
+composer cs
+```
+进行代码格式化，这个命令会直接修改文件完成修正，如果只需要查看格式是否正确,那么使用
+```shell
+composer cs-diff
+```
+
+## 感谢🙏
+> 排名不分先后
+
+- [ThinkPHP](https://thinkphp.cn)
+- [Vue](https://cn.vuejs.org/)
+- [ElementPlus](https://element-plus.org)
+- [JetBrains](https://www.jetbrains.com/)
 
 
-> ThinkPHP8.0的运行环境要求PHP8.0.0+
-
-现在开始，你可以使用官方提供的[ThinkChat](https://chat.topthink.com/)，让你在学习ThinkPHP的旅途中享受私人AI助理服务！
-
-![](https://www.topthink.com/uploads/assistant/20230630/4d1a3f0ad2958b49bb8189b7ef824cb0.png)
-
-## 文档
-
-[完全开发手册](https://doc.thinkphp.cn)
-
-## 服务
-
-ThinkPHP生态服务由[顶想云](https://www.topthink.com)（TOPThink Cloud）提供，为生态提供专业的开发者服务和价值之选。
-
-## 赞助
-全新的[赞助计划](https://www.thinkphp.cn/sponsor)可以让你通过我们的网站、手册、欢迎页及GIT仓库获得巨大曝光，同时提升企业的品牌声誉，也更好保障ThinkPHP的可持续发展。
-
-[![](https://www.thinkphp.cn/uploads/images/20230630/48396092a0515886a3da6bd268131c8f.png)](http://github.crmeb.net/u/TPSY)
-
-[![](https://www.thinkphp.cn/uploads/images/20230630/a12bd248beee0e7491dd0f79dc4dd5e9.png)](https://www.thinkphp.cn/sponsor)
-
-[![](https://www.thinkphp.cn/uploads/images/20230630/e7f48d909d41dd5ebaf4a5aa982d0455.png)](https://www.thinkphp.cn/sponsor)
-
-## 安装
-
-~~~
-composer create-project topthink/think tp
-~~~
-
-启动服务
-
-~~~
-cd tp
-php think run
-~~~
-
-然后就可以在浏览器中访问
-
-~~~
-http://localhost:8000
-~~~
-
-如果需要更新框架使用
-~~~
-composer update topthink/framework
-~~~
-
-## 命名规范
-
-`ThinkPHP`遵循PSR-2命名规范和PSR-4自动加载规范。
-
-## 参与开发
-
-直接提交PR或者Issue即可
-
-## 版权信息
-
-ThinkPHP遵循Apache2开源协议发布，并提供免费使用。
-
-本项目包含的第三方源码和二进制文件之版权信息另行标注。
-
-版权所有Copyright © 2006-2023 by ThinkPHP (http://thinkphp.cn) All rights reserved。
-
-ThinkPHP® 商标和著作权所有者为上海顶想信息科技有限公司。
-
-更多细节参阅 [LICENSE.txt](LICENSE.txt)
