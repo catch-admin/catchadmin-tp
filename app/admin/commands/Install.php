@@ -11,7 +11,10 @@ use think\helper\Str;
 
 class Install extends Command
 {
-    protected $databaseLink = [];
+    protected string $webRepo = 'https://gitee.com/catchadmin/catch-admin-vue.git';
+    protected array $databaseLink = [];
+
+    protected string $appDomain = '';
 
     protected function configure()
     {
@@ -20,8 +23,9 @@ class Install extends Command
             ->setDescription('install project');
     }
 
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): void
     {
+        $this->cloneWeb();die;
         if ($input->getOption('reinstall')) {
             $this->reInstall();
             $this->project();
@@ -95,6 +99,7 @@ class Install extends Command
         if (!str_contains('http', $appDomain) || !str_contains('https', $appDomain)) {
             $appDomain = 'http://' . $appDomain;
         }
+        $this->appDomain = $appDomain;
 
         $answer = strtolower($this->output->ask($this->input, '🤔️ Did You Need to Set Database information? (Y/N): '));
 
@@ -170,6 +175,8 @@ class Install extends Command
         // todo something
         // create jwt
         Console::call('jwt:create');
+
+        $this->cloneWeb();
     }
 
 
@@ -260,8 +267,6 @@ class Install extends Command
             if (file_exists($this->getEnvFilePath())) {
                 unlink($this->getEnvFilePath());
             }
-
-            $this->finished();
         }
     }
 
@@ -274,5 +279,36 @@ class Install extends Command
     protected function getEnvFilePath(): string
     {
         return root_path() . '.env';
+    }
+
+
+    protected function cloneWeb(): void
+    {
+        $webPath = $this->app->getRootPath(). DIRECTORY_SEPARATOR . 'web';
+
+        if (! is_dir($webPath)) {
+            $this->output->info('下载前端项目');
+
+            shell_exec("git clone {$this->webRepo} web");
+
+            if (is_dir($webPath)) {
+                $this->output->info('下载前端项目成功');
+                $this->output->info('设置镜像源');
+                shell_exec('yarn config set registry https://registry.npmmirror.com');
+                $this->output->info('安装前端依赖，如果安装失败，请检查是否已安装了前端 yarn 管理工具，或者因为网络等原因');
+                shell_exec('cd ' . $this->app->getRootPath() . DIRECTORY_SEPARATOR . 'web && yarn install');
+                $this->output->info('手动启动使用 yarn dev');
+                $this->output->info('项目启动后不要忘记设置 web/.env 里面的环境变量 VITE_BASE_URL');
+                $this->output->info('安装前端依赖成功，开始启动前端项目');
+                file_put_contents($webPath . DIRECTORY_SEPARATOR . '.env', <<<STR
+VITE_BASE_URL=$this->appDomain
+VITE_APP_NAME=后台管理
+STR
+);
+                shell_exec("cd {$webPath} && yarn dev");
+            } else {
+                $this->output->error('下载前端项目失败, 请到该仓库下载 https://gitee.com/catchadmin/catch-admin-vue');
+            }
+        }
     }
 }
