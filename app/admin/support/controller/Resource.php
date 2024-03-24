@@ -9,24 +9,24 @@ trait Resource
     }
 
 
-    public function create()
+    public function save()
     {
 
     }
 
 
-    public function read()
+    public function read($id)
     {
 
     }
 
-    public function update()
+    public function update($id)
     {
 
     }
 
 
-    public function delete()
+    public function delete($id)
     {
 
     }
