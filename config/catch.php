@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'commands' => [
-        \app\admin\commands\Install::class
-    ]
+    // 超级管理员 ID 集合
+    'super_admin' => [1]
 ];
