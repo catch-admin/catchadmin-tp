@@ -19,12 +19,11 @@ use think\Model;
 trait BaseOperateTrait
 {
     /**
+     * @param array $fields
      * @return mixed
      */
-    public function getList(): mixed
+    public function getList(array $fields = ['*']): mixed
     {
-        $fields = $this->schema;
-
         $builder = $this->field($fields)
             ->creator()
             ->quickSearch();
@@ -121,7 +120,7 @@ trait BaseOperateTrait
     protected function filterData(array $data): array
     {
         // 表单保存的数据集合
-        $fillable = array_unique(array_merge($this->schema, $this->getField()));
+        $fillable = $this->getField();
 
         foreach ($data as $k => $val) {
             if ($this->autoNull2EmptyString && is_null($val)) {
@@ -231,7 +230,7 @@ trait BaseOperateTrait
     {
         $model = $this->firstBy($id);
 
-        $status = $model->getData($field) == Status::Enable ? Status::Disable : Status::Enable;
+        $status = $model->getData($field) == Status::ENABLE ? Status::DISABLE : Status::ENABLE;
 
         $model->data([$field => $status]);
 

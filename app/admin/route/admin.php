@@ -8,12 +8,14 @@ use app\admin\controller\admin\Admin;
 Route::group('api', function () {
     // 无需要认证的路由组
     Route::group( function () {
-        Route::post('login', Auth::class . '/attempt');
+        Route::post('login', Auth::class . '/login');
+        Route::post('logout', Auth::class . '/logout');
     });
 
     // 需要认证的路由组
     Route::group( function () {
-        Route::resource('admin', Admin::class)->except(['create', 'edit']);
+        Route::resource('users', Admin::class)->except(['create', 'edit']);
+        Route::get('user/online', Admin::class . '/online');
         // next
     });
 })

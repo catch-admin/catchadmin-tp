@@ -1,7 +1,7 @@
 <?php
 namespace app\admin\model;
 
-use app\admin\controller\traits\ScopeTrait;
+use app\admin\model\traits\ScopeTrait;
 use app\admin\model\traits\BaseOperateTrait;
 use app\admin\model\traits\WithAttributes;
 use app\admin\model\traits\WithEvents;
@@ -46,6 +46,13 @@ class CatchModel extends Model
 
     }
 
+    /**
+     * @return array
+     */
+    public function getSchema(): array
+    {
+        return $this->schema;
+    }
 
     /**
      * @return void
@@ -53,7 +60,7 @@ class CatchModel extends Model
     protected function useSoftDelete(): void
     {
         if ($this->isSoftDelete) {
-            $this->deleteTime = 'delete_at';
+            $this->deleteTime = 'deleted_at';
         }
     }
 }

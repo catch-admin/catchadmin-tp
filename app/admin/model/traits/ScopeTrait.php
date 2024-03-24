@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace app\admin\controller\traits;
+namespace app\admin\model\traits;
 
 use app\admin\model\Admin;
 

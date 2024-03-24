@@ -5,6 +5,16 @@ namespace app\admin\model;
 
 class Admin extends CatchModel
 {
+    protected $field = [
+        'username', 'password', 'email', 'status', 'avatar', 'created_at', 'updated_at', 'deleted_at', 'creator_id', 'remember_token',
+    ];
+
+    protected $hidden = ['password', 'remember_token'];
+
+    /**
+     * @param string $value
+     * @return string
+     */
     public function setPasswordAttr(string $value): string
     {
         return bcrypt($value);

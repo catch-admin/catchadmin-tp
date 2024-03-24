@@ -7,6 +7,7 @@ use think\console\input\Option;
 use think\console\Output;
 use think\facade\Console;
 use think\facade\Filesystem;
+use think\helper\Str;
 
 class Install extends Command
 {
@@ -159,6 +160,7 @@ class Install extends Command
             }
 
             Console::call('migrate:run');
+            Console::call('seed:run');
         }
     }
 
@@ -167,9 +169,7 @@ class Install extends Command
     {
         // todo something
         // create jwt
-        //Console::call('jwt:create');
-        // create service
-        //Console::call('catch-service:discover');
+        Console::call('jwt:create');
     }
 
 
@@ -185,6 +185,9 @@ class Install extends Command
             $env['DB_PASS'] = $password;
             $env['DB_PORT'] = $port;
             $env['DB_CHARSET'] = $charset;
+
+            # JWT 密钥
+            $env['JWT_SECRET'] = md5(Str::random(8));
 
             $dotEnv = '';
             foreach ($env as $key => $e) {
