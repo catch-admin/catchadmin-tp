@@ -14,7 +14,4 @@ Route::group('api', function () {
         // next
     });
 })
-->middleware([
-    JsonResponseMiddleware::class,
-
-]);
+->middleware(JsonResponseMiddleware::class);
