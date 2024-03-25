@@ -36,6 +36,10 @@ class CatchModel extends Model
         // 隐藏字段
         $this->hidden = array_merge($this->hidden, $this->defaultHiddenFields());
 
+        // 数据权限自动
+        $this->autoDataRange();
+
+        // 初始化
         $this->initialize();
     }
 
@@ -65,6 +69,20 @@ class CatchModel extends Model
     {
         if ($this->isSoftDelete) {
             $this->deleteTime = 'deleted_at';
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function autoDataRange(): void
+    {
+        // auto use data range
+        foreach (class_uses_recursive(static::class) as $trait) {
+            if (str_contains($trait, 'DataRangScopeTrait')) {
+                dd(123);
+                $this->setDataRange();
+            }
         }
     }
 }
