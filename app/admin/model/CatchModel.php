@@ -7,10 +7,11 @@ use app\admin\model\traits\WithAttributes;
 use app\admin\model\traits\WithEvents;
 use think\Model;
 use think\model\concern\SoftDelete;
+use app\admin\model\traits\RewriteTrait;
 
 class CatchModel extends Model
 {
-    use SoftDelete, ScopeTrait, BaseOperateTrait, WithAttributes, WithEvents;
+    use SoftDelete, ScopeTrait, BaseOperateTrait, WithAttributes, WithEvents, RewriteTrait;
 
     protected int $perPage = 10;
 
@@ -31,6 +32,9 @@ class CatchModel extends Model
         parent::__construct($data);
 
         $this->useSoftDelete();
+
+        // 隐藏字段
+        $this->hidden = array_merge($this->hidden, $this->defaultHiddenFields());
 
         $this->initialize();
     }

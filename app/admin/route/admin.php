@@ -1,9 +1,9 @@
 <?php
-use think\facade\Route;
-use app\admin\middleware\JsonResponseMiddleware;
-use app\admin\controller\admin\Auth;
-use app\admin\controller\admin\Admin;
+
 use app\admin\middleware\AuthMiddleware;
+use app\admin\middleware\JsonResponseMiddleware;
+use think\facade\Route;
+use app\admin\controller\Auth;
 
 // 域名路由组
 Route::group('api', function () {
@@ -15,9 +15,7 @@ Route::group('api', function () {
 
     // 需要认证的路由组
     Route::group( function () {
-        Route::resource('users', Admin::class)->except(['create', 'edit']);
-        Route::get('user/online', Admin::class . '/online');
-        // next
+        include __DIR__ . '/auth.php';
     })->middleware([
         AuthMiddleware::class
     ]);

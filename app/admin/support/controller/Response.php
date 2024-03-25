@@ -32,8 +32,7 @@ trait Response
         return json([
             'code'    => Code::SUCCESS,
             'message' => 'success',
-            'count'   => $list->total(),
-            'current' => $list->currentPage(),
+            'total'   => $list->total(),
             'limit'   => $list->listRows(),
             'data'    => $list->getCollection(),
         ]);

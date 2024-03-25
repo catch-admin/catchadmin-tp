@@ -6,7 +6,6 @@ use think\console\Input;
 use think\console\input\Option;
 use think\console\Output;
 use think\facade\Console;
-use think\facade\Filesystem;
 use think\helper\Str;
 
 class Install extends Command

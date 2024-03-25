@@ -30,6 +30,8 @@ abstract class CatchController
     public function __construct(Request $request)
     {
         $this->request = $request;
+
+        $this->initialize();
     }
 
     public function initialize()
