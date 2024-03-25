@@ -2,6 +2,7 @@
 namespace app\admin\controller\admin;
 
 use app\admin\controller\CatchController;
+use app\admin\support\CatchAuth;
 use app\Request;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
@@ -15,10 +16,10 @@ class Auth extends CatchController
      * @throws DataNotFoundException
      * @throws DbException
      */
-    public function login(Request $request):Json
+    public function login(Request $request, CatchAuth $auth):Json
     {
         return $this->success([
-            'token' => $this->auth()->attempt($request->all())
+            'token' => $auth->attempt($request->all())
         ]);
     }
 
@@ -28,8 +29,8 @@ class Auth extends CatchController
      *
      * @return Json
      */
-    public function logout(): Json
+    public function logout(CatchAuth $auth): Json
     {
-        return $this->success($this->auth()->logout());
+        return $this->success($auth->logout());
     }
 }

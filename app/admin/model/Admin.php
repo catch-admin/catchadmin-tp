@@ -9,7 +9,7 @@ class Admin extends CatchModel
         'username', 'password', 'email', 'status', 'avatar', 'created_at', 'updated_at', 'deleted_at', 'creator_id', 'remember_token',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'deleted_at'];
 
     /**
      * @param string $value

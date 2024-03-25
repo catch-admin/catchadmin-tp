@@ -5,7 +5,7 @@ trait Resource
 {
     public function index()
     {
-
+        return $this->model->getList();
     }
 
 
