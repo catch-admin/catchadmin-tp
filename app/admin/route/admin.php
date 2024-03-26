@@ -4,6 +4,7 @@ use app\admin\middleware\AuthMiddleware;
 use app\admin\middleware\JsonResponseMiddleware;
 use think\facade\Route;
 use app\admin\controller\Auth;
+use app\admin\middleware\PermissionGateMiddleware;
 
 // 域名路由组
 Route::group('api', function () {
@@ -17,7 +18,8 @@ Route::group('api', function () {
     Route::group( function () {
         include __DIR__ . '/auth.php';
     })->middleware([
-        AuthMiddleware::class
+        AuthMiddleware::class,
+        PermissionGateMiddleware::class
     ]);
 })
 ->middleware([JsonResponseMiddleware::class]);

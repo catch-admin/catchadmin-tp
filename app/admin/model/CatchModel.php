@@ -17,12 +17,11 @@ class CatchModel extends Model
 
     protected $createTime = 'created_at';
 
-    protected ?string $deleteTime = null;
-
     protected bool $isSoftDelete = true;
 
     protected $updateTime = 'updated_at';
 
+    protected string $deleteTime = 'deleted_at';
     protected $defaultSoftDelete = 0;
 
     protected $autoWriteTimestamp = true;
@@ -30,8 +29,6 @@ class CatchModel extends Model
     public function __construct(array|object $data = [])
     {
         parent::__construct($data);
-
-        $this->useSoftDelete();
 
         // 隐藏字段
         $this->hidden = array_merge($this->hidden, $this->defaultHiddenFields());
@@ -65,16 +62,6 @@ class CatchModel extends Model
     /**
      * @return void
      */
-    protected function useSoftDelete(): void
-    {
-        if ($this->isSoftDelete) {
-            $this->deleteTime = 'deleted_at';
-        }
-    }
-
-    /**
-     * @return void
-     */
     protected function autoDataRange(): void
     {
         // auto use data range
@@ -83,5 +70,35 @@ class CatchModel extends Model
                 $this->setDataRange();
             }
         }
+    }
+
+    /**
+     * 重写通过属性控制，支持软删除
+     *
+     * @param bool $read
+     * @return bool|string
+     */
+    public function getDeleteTimeField(bool $read = false): bool|string
+    {
+        if (!$this->isSoftDelete) {
+            return false;
+        }
+
+        $field = property_exists($this, 'deleteTime') && isset($this->deleteTime) ? $this->deleteTime : 'delete_time';
+
+        if (false === $field) {
+            return false;
+        }
+
+        if (!str_contains($field, '.')) {
+            $field = '__TABLE__.' . $field;
+        }
+
+        if (!$read && str_contains($field, '.')) {
+            $array = explode('.', $field);
+            $field = array_pop($array);
+        }
+
+        return $field;
     }
 }

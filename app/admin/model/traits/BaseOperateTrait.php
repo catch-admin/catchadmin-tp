@@ -213,6 +213,10 @@ trait BaseOperateTrait
         /* @var CatchModel|Model $model */
         $model = $this->where($field, $value)->field($columns)->find();
 
+        if (!$model) {
+            throw new FailedException('数据不存在');
+        }
+
        if (!empty($this->autoWriteRelations)) {
            foreach ($this->autoWriteRelations as $relation) {
              //  $model->setAttr($relation, $model->{$relation}()->select());

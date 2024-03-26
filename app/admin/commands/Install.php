@@ -94,7 +94,7 @@ class Install extends Command
 
         // 设置 app domain
         $appDomain = strtolower($this->output->ask($this->input, '👉 first, you should set app domain: '));
-        if (!str_contains('http', $appDomain) || !str_contains('https', $appDomain)) {
+        if (!str_contains($appDomain, 'http') || !str_contains($appDomain, 'https')) {
             $appDomain = 'http://' . $appDomain;
         }
         $this->appDomain = $appDomain;

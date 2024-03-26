@@ -14,7 +14,7 @@ trait ScopeTrait
      */
     public function scopeCreator($query): mixed
     {
-        if (property_exists($this, 'schema') && in_array('creator_id', $this->schema)) {
+        if (property_exists($this, 'field') && in_array('creator_id', $this->getField())) {
             return $query->addSelectSub(function () {
                 $user = app(Admin::class);
                 return $user->whereColumn($this->getTable() . '.creator_id', $user->getTable() . '.id')

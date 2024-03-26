@@ -3,6 +3,8 @@ namespace app\admin\controller\permissions;
 
 use app\admin\controller\CatchController;
 use app\admin\model\Admin as AdminModel;
+use app\admin\model\LogLogin;
+use app\admin\model\LogOperate;
 use think\response\Json;
 
 class Admin extends CatchController
@@ -45,5 +47,24 @@ class Admin extends CatchController
     public function online():Json
     {
         return $this->success($this->user()->permissions());
+    }
+
+    public function loginLog(LogLogin $logLogin)
+    {
+        $admin = $this->user();
+
+        return $this->success($logLogin->getUserLogBy($admin->isSuperAdmin() ? null : $admin->email));
+    }
+
+    public function operateLog(LogOperate $logOperate)
+    {
+        $scope = $this->request->get('scope', 'self');
+
+        return $this->success($logOperate->setBeforeGetList(function ($builder) use ($scope){
+            if ($scope == 'self') {
+                return $builder->where('creator_id', $this->uid());
+            }
+            return $builder;
+        })->getList());
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\admin\support;
 
+use app\admin\exceptions\FailedException;
 use app\admin\model\Admin;
 use app\admin\exceptions\LoginFailedException;
 use app\admin\support\enums\Code;
@@ -12,6 +13,9 @@ use thans\jwt\facade\JWTAuth;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
+use app\admin\support\log\Login as LoginLog;
+use think\Request;
+
 
 class CatchAuth
 {
@@ -43,29 +47,28 @@ class CatchAuth
      */
     public function attempt($condition): string
     {
-        /* @var Admin $user */
-        $admin = Admin::where($this->filter($condition))->find();
+        try {
+            /* @var Admin $user */
+            $admin = Admin::where($this->filter($condition))->find();
 
-        if (!$admin) {
-            throw new LoginFailedException();
+            if (!$admin) {
+                throw new LoginFailedException();
+            }
+            if ($admin->status == Status::DISABLE) {
+                throw new LoginFailedException('该用户已被禁用', Code::USER_FORBIDDEN);
+            }
+
+            if ($this->checkPassword && !password_verify($condition['password'], $admin->password)) {
+                throw new LoginFailedException('登录失败, 请检查密码');
+            }
+
+            $token = $this->jwt($admin);
+            app(LoginLog::class)->handle($admin, $token);
+            return $token;
+        } catch (\Exception $e) {
+            app(LoginLog::class)->handle();
+            throw new LoginFailedException($e->getMessage(), $e->getCode());
         }
-        if ($admin->status == Status::DISABLE) {
-            throw new LoginFailedException('该用户已被禁用|' . $admin->username, Code::USER_FORBIDDEN);
-        }
-
-        if ($this->checkPassword && !password_verify($condition['password'], $admin->password)) {
-            throw new LoginFailedException('登录失败|' . $admin->username);
-        }
-
-        $token = $this->jwt($admin);
-
-        // 保存 token
-        $admin->remember_token = $token;
-        $admin->login_at = time();
-        $admin->login_ip = request()->ip();
-        $admin->save();
-
-        return $token;
     }
 
 

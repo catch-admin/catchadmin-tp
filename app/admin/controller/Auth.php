@@ -2,7 +2,6 @@
 namespace app\admin\controller;
 
 use app\admin\support\CatchAuth;
-use app\admin\support\generate\Controller;
 use app\Request;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
