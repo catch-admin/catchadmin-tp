@@ -10,8 +10,12 @@ use think\response\Json;
  */
 trait Response
 {
-    public function success(mixed $data = [], string $message = 'success', int $code = Code::SUCCESS): Json
+    public function success(mixed $data = [], string $message = '操作成功', int $code = Code::SUCCESS): Json
     {
+        if ($data instanceof Paginator) {
+            return $this->paginate($data);
+        }
+
         return json([
             'code' => $code,
             'message' => $message,
@@ -31,7 +35,7 @@ trait Response
     {
         return json([
             'code'    => Code::SUCCESS,
-            'message' => 'success',
+            'message' => '操作成功',
             'total'   => $list->total(),
             'limit'   => $list->listRows(),
             'data'    => $list->getCollection(),

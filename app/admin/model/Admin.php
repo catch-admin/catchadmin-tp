@@ -13,10 +13,19 @@ class Admin extends CatchModel
     use HasRolesTrait, HasJobsTrait;
 
     protected $field = [
-        'username', 'password', 'email', 'status', 'avatar', 'created_at', 'updated_at', 'deleted_at', 'creator_id', 'remember_token',
+        'id', 'username', 'password', 'email', 'status', 'avatar', 'created_at', 'department_id', 'updated_at', 'deleted_at', 'creator_id', 'remember_token',
     ];
 
     protected $hidden = ['password', 'remember_token'];
+
+    protected array $autoWriteRelations = ['roles', 'jobs'];
+
+    public array $searchable = [
+        'status' => '=',
+        'email' => 'like',
+        'username' => 'like',
+        'department_id' => '=',
+    ];
 
     /**
      * @param string $value
@@ -54,7 +63,7 @@ class Admin extends CatchModel
         }
 
         $this->permissions = $permissions;
-
+        $this->roles = $this->roles()->column('identify');
         return $this;
     }
 }

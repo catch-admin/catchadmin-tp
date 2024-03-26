@@ -54,16 +54,25 @@ trait WithAttributes
      */
     protected bool $isPaginate = true;
 
-
-    /**
-     * @var array
-     */
-    protected array $formRelations = [];
-
     /**
      * @var bool
      */
     protected bool $dataRange = false;
+
+    /**
+     * 快速搜索
+     *
+     * @var array
+     */
+    public array $searchable = [];
+
+
+    /**
+     * 表单提交自动写入关联
+     *
+     * @var array
+     */
+    protected array $autoWriteRelations = [];
 
     /**
      * null to empty string

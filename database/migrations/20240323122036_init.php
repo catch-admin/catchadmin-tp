@@ -85,7 +85,7 @@ class Init extends Migrator
         if (!$this->hasTable('roles')) {
             $table  =  $this->table('roles',['engine'=>'Innodb', 'comment' => '角色表', 'signed' => false]);
             $table->addColumn('role_name', 'string',['limit'  =>  15,'default'=>'','comment'=>'角色名'])
-                ->addColumn('identifier', 'string',['limit'  =>  30,'default'=>'','comment'=>'角色标识'])
+                ->addColumn('identify', 'string',['limit'  =>  30,'default'=>'','comment'=>'角色标识'])
                 ->addColumn('parent_id', 'integer',['default'=>0,'comment'=>'父级ID', 'signed' => false])
                 ->addColumn('description', 'string',['default'=> '','comment'=>'角色备注'])
                 ->addColumn('data_range', 'integer',['limit' => MysqlAdapter::INT_TINY,'default'=> 0,'comment'=>'1 全部数据 2 自定义数据 3 仅本人数据 4 部门数据 5 部门及以下数据'])

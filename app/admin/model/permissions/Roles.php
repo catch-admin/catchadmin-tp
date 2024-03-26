@@ -17,7 +17,7 @@ class Roles extends CatchModel
 	protected $field = [
 		'id',
 		'role_name',
-		'identifier',
+		'identify',
 		'parent_id',
 		'description',
 		'data_range',
@@ -26,6 +26,12 @@ class Roles extends CatchModel
 		'updated_at',
 		'deleted_at',
 	];
+
+    protected array $autoWriteRelations = ['permissions'];
+
+    protected bool $asTree = true;
+
+    protected bool $isPaginate = false;
 
     public const ALL_DATA = 1; // 全部数据
     public const SELF_CHOOSE = 2; // 自定义数据

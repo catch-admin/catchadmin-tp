@@ -24,4 +24,21 @@ class Departments extends CatchModel
 		'updated_at',
 		'deleted_at',
 	];
+    protected bool $asTree = true;
+    protected bool $isPaginate = false;
+
+    public function findFollowDepartments(int|array $id): array
+    {
+        if (!is_array($id)) {
+            $id = [$id];
+        }
+
+        $followDepartmentIds = $this->whereIn($this->getParentIdColumn(), $id)->column('id');
+
+        if (! empty($followDepartmentIds)) {
+            $followDepartmentIds = array_merge($followDepartmentIds, $this->findFollowDepartments($followDepartmentIds));
+        }
+
+        return $followDepartmentIds;
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\model\CatchModel;
 use app\admin\support\controller\Auth;
 use app\admin\support\controller\Resource;
 use app\admin\support\controller\Response;
@@ -17,9 +18,9 @@ abstract class CatchController
     /**
      * 子类自动注入 model
      *
-     * @var Model|null
+     * @var CatchModel|Model
      */
-    protected ?Model $model = null;
+    protected Model|CatchModel $model;
 
     /**
      * 实际请求的 request 对象

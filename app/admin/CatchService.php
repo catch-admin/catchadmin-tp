@@ -4,6 +4,7 @@ namespace app\admin;
 
 use app\admin\commands\Controller;
 use app\admin\commands\Curd;
+use app\admin\commands\InstallWeb;
 use app\admin\commands\Model;
 use app\admin\support\CatchQuery;
 use think\Service;
@@ -18,7 +19,8 @@ class CatchService extends Service
             Install::class,
             Controller::class,
             Model::class,
-            Curd::class
+            Curd::class,
+            InstallWeb::class
         ]);
 
 

@@ -1,35 +1,38 @@
 <?php
 namespace app\admin\support\controller;
 
-use think\response\Json;
-
 trait Resource
 {
-    public function index(): Json
+    public function index()
     {
-        return $this->paginate($this->model->getList());
+        return $this->success($this->model->getList());
     }
 
 
-    public function save(): Json
+    public function save()
     {
         return $this->success($this->model->storeBy($this->request->all()));
     }
 
 
-    public function read($id): Json
+    public function read($id)
     {
         return $this->success($this->model->firstBy($id));
     }
 
-    public function update($id): Json
+    public function update($id)
     {
         return $this->success($this->model->updateBy($id, $this->request->all()));
     }
 
 
-    public function delete($id): Json
+    public function delete($id)
     {
         return $this->success($this->model->deleteBy($id));
+    }
+
+    public function enable($id)
+    {
+        return $this->success($this->model->toggleBy($id));
     }
 }

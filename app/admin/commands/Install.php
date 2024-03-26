@@ -24,7 +24,6 @@ class Install extends Command
 
     protected function execute(Input $input, Output $output): void
     {
-        $this->cloneWeb();die;
         if ($input->getOption('reinstall')) {
             $this->reInstall();
             $this->project();

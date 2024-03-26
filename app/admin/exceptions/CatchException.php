@@ -17,4 +17,10 @@ abstract class CatchException extends HttpException
     {
         return self::HTTP_SUCCESS;
     }
+
+
+    public function getHeaders()
+    {
+        return config('catch.cross_headers');
+    }
 }

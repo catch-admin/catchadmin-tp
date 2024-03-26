@@ -11,4 +11,22 @@ class Permissions extends CatchController
 	{
 		$this->model = new PermissionsModel();
 	}
+
+    public function index()
+    {
+        if (request()->get('from') == 'role') {
+            return $this->success($this->model->setBeforeGetList(function ($query){
+                return $query->orderByDesc('sort');
+            })->getList());
+        }
+
+        return $this->success($this->model->setBeforeGetList(function ($query) {
+            return $query->with('actions')->whereIn('type', [PermissionsModel::TOP_MENU, PermissionsModel::MENU]);
+        })->getList());
+    }
+
+    public function enable($id)
+    {
+        return $this->success($this->model->toggleBy($id, 'hidden'));
+    }
 }

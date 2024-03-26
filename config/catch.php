@@ -2,7 +2,7 @@
 
 return [
     // 前端项目目录
-    'web' => root_path('web'),
+    'web_path' => root_path('web'),
 
     // 跨域头信息规则
     'cross_headers' => [

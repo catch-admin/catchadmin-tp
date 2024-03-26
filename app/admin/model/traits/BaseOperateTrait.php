@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace app\admin\model\traits;
 
 use app\admin\exceptions\FailedException;
+use app\admin\model\CatchModel;
 use app\admin\support\enums\Status;
 use Closure;
 use think\Collection;
 use think\contract\Arrayable;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\facade\Db;
 use think\facade\Request;
 use think\Model;
@@ -39,7 +43,7 @@ trait BaseOperateTrait
         }
 
         // 排序
-        if ($this->sortField && in_array($this->sortField, $this->schema)) {
+        if ($this->sortField && in_array($this->sortField, $this->getField())) {
             $builder = $builder->orderBy($this->aliasField($this->sortField), $this->sortDesc ? 'desc' : 'asc');
         }
 
@@ -52,7 +56,7 @@ trait BaseOperateTrait
 
         // 分页
         if ($this->isPaginate) {
-            return $builder->paginate(Request::get('limit', $this->perPage));
+            return $builder->paginate(Request::get('limit', $this->perPage, 'int'));
         }
 
         $data = $builder->select();
@@ -73,7 +77,24 @@ trait BaseOperateTrait
      */
     public function storeBy(array $data): mixed
     {
-        if ($this->data($this->filterData($data))->save()) {
+        // 保留原始 fields，防止里面的原始 field 被 filter 去除
+        $originFields  = array_keys($data);
+
+        $saveData = $this->filterData($data);
+        foreach ($saveData as $field => $value) {
+            $this->{$field} = $value;
+        }
+
+        if ($this->save()) {
+            // 如果自动写入不为空
+            if (!empty($this->autoWriteRelations)) {
+                foreach ($this->autoWriteRelations as $relation) {
+                    if (in_array($relation, $originFields) && count($data[$relation])) {
+                        $this->relation($relation)->save($data[$relation]);
+                    }
+                }
+            }
+
             return $this->getKey();
         }
 
@@ -88,9 +109,21 @@ trait BaseOperateTrait
      */
     public function createBy(array $data): mixed
     {
+        // 保留原始 fields，防止里面的原始 field 被 filter 去除
+        $originFields  = array_keys($data);
+
         $model = $this->newInstance();
 
-        if ($model->data($this->filterData($data))->save()) {
+        $saveData = $this->filterData($data);
+        if ($model->data($saveData)->save()) {
+            // 如果自动写入不为空
+            if (!empty($this->autoWriteRelations)) {
+                foreach ($this->autoWriteRelations as $relation) {
+                    if (in_array($relation, $originFields) && count($data[$relation])) {
+                        $this->{$relation}()->attach($data[$relation]);
+                    }
+                }
+            }
             return $model->getKey();
         }
 
@@ -106,9 +139,27 @@ trait BaseOperateTrait
      */
     public function updateBy($id, array $data): mixed
     {
+        // 保留原始 fields，防止里面的原始 field 被 filter 去除
+        $originFields  = array_keys($data);
+
         $model = $this->where($this->getPk(), $id)->find();
 
-        return $model->data($this->filterData($data))->save();
+        $saveData = $this->filterData($data);
+        if ($model->data($saveData)->save()) {
+            // 如果自动写入不为空
+            if (!empty($this->autoWriteRelations)) {
+                foreach ($this->autoWriteRelations as $relation) {
+                    if (in_array($relation, $originFields)) {
+                        $model->{$relation}()->detach();
+                        if (count($data[$relation])) {
+                            $model->{$relation}()->attach($data[$relation]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -136,8 +187,8 @@ trait BaseOperateTrait
             }
         }
 
-        if (in_array($this->getCreatorIdColumn(), $this->schema)) {
-            $data['creator_id'] = '';
+        if (in_array($this->getCreatorIdColumn(), $this->getField())) {
+            $data[$this->getCreatorIdColumn()] = request()->admin->id;
         }
 
         return $data;
@@ -151,12 +202,22 @@ trait BaseOperateTrait
      * @param null $field
      * @param string[] $columns
      * @return ?Model
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function firstBy($value, $field = null, array $columns = ['*']): ?Model
     {
         $field = $field ?: $this->getPk();
 
+        /* @var CatchModel|Model $model */
         $model = $this->where($field, $value)->field($columns)->find();
+
+       if (!empty($this->autoWriteRelations)) {
+           foreach ($this->autoWriteRelations as $relation) {
+             //  $model->setAttr($relation, $model->{$relation}()->select());
+           }
+       }
 
         if ($this->afterFirstBy) {
             $model = call_user_func($this->afterFirstBy, $model);
@@ -171,13 +232,16 @@ trait BaseOperateTrait
      * @param $id
      * @param bool $force
      * @return bool|null
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function deleteBy($id, bool $force = false): ?bool
     {
         /* @var Model $model */
         $model = $this->where($this->getPk(), $id)->find();
 
-        if (in_array($this->getParentIdColumn(), $this->schema)
+        if (in_array($this->getParentIdColumn(), $this->getField())
             && $this->where($this->getParentIdColumn(), $model->id)->find()
         ) {
             throw new FailedException('请先删除子级');
@@ -187,6 +251,14 @@ trait BaseOperateTrait
             $deleted = $model->force()->delete();
         } else {
             $deleted = $model->delete();
+        }
+
+        if ($deleted) {
+            if (!empty($this->autoWriteRelations)) {
+                foreach ($this->autoWriteRelations as $relation) {
+                    $model->{$relation}()->detach();
+                }
+            }
         }
 
         return $deleted;
@@ -234,7 +306,7 @@ trait BaseOperateTrait
 
         $model->data([$field => $status]);
 
-        if ($model->save() && in_array($this->getParentIdColumn(), $this->schema)) {
+        if ($model->save() && in_array($this->getParentIdColumn(), $this->getField())) {
             $this->updateChildren($id, $field, $model->getData($field));
         }
 
@@ -253,7 +325,7 @@ trait BaseOperateTrait
             $ids = explode(',', $ids);
         }
 
-        DB::transaction(function () use ($ids, $field) {
+        $this->transaction(function () use ($ids, $field) {
             foreach ($ids as $id) {
                 $this->toggleBy($id, $field);
             }
@@ -272,15 +344,15 @@ trait BaseOperateTrait
      */
     public function updateChildren(mixed $parentId, string $field, mixed $value): void
     {
-        if (!$parentId instanceof Arrayable) {
-            $parentId = Collection::make([$parentId]);
+        if (!$parentId) {
+            $parentId = [$parentId];
         }
 
         $childrenId = $this->whereIn($this->getParentIdColumn(), $parentId)->column('id');
 
         if (count($childrenId)) {
             if ($this->whereIn($this->getParentIdColumn(), $parentId)->update([
-                $field => $value
+                $field => $value,
             ])) {
                 $this->updateChildren($childrenId, $field, $value);
             }
@@ -316,9 +388,9 @@ trait BaseOperateTrait
      */
     public function getUpdatedAtColumn(): ?string
     {
-        $updatedAtColumn = $this->getUpdatedAtColumn();
+        $updatedAtColumn = $this->updateTime;
 
-        if (!in_array($this->getUpdatedAtColumn(), $this->schema)) {
+        if (!in_array($updatedAtColumn, $this->getField())) {
             $updatedAtColumn = null;
         }
 
@@ -332,9 +404,9 @@ trait BaseOperateTrait
      */
     public function getCreatedAtColumn(): ?string
     {
-        $createdAtColumn = $this->getCreatorIdColumn();
+        $createdAtColumn = $this->createTime;
 
-        if (!in_array($this->getCreatorIdColumn(), $this->schema)) {
+        if (!in_array($createdAtColumn, $this->getField())) {
             $createdAtColumn = null;
         }
 
@@ -356,7 +428,7 @@ trait BaseOperateTrait
      */
     protected function setCreatorId(): static
     {
-        $this->data($this->getCreatorIdColumn(), Auth::guard(getGuardName())->id());
+        $this->data([$this->getCreatorIdColumn() => request()->admin->id]);
 
         return $this;
     }

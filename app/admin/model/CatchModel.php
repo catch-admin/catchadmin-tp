@@ -80,7 +80,6 @@ class CatchModel extends Model
         // auto use data range
         foreach (class_uses_recursive(static::class) as $trait) {
             if (str_contains($trait, 'DataRangScopeTrait')) {
-                dd(123);
                 $this->setDataRange();
             }
         }
