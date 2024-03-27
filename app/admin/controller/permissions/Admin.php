@@ -46,7 +46,13 @@ class Admin extends CatchController
 
     public function online():Json
     {
-        return $this->success($this->user()->permissions());
+        if ($this->request->isGet()) {
+            return $this->success($this->user()->permissions());
+        }
+
+        return $this->success(
+            $this->user()->updateBy($this->uid(), $this->request->all())
+        );
     }
 
     public function loginLog(LogLogin $logLogin)
