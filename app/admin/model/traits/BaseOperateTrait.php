@@ -90,7 +90,7 @@ trait BaseOperateTrait
             if (!empty($this->autoWriteRelations)) {
                 foreach ($this->autoWriteRelations as $relation) {
                     if (in_array($relation, $originFields) && count($data[$relation])) {
-                        $this->relation($relation)->save($data[$relation]);
+                        $this->{$relation}()->save($data[$relation]);
                     }
                 }
             }
