@@ -94,7 +94,7 @@ class Install extends Command
 
         // 设置 app domain
         $appDomain = strtolower($this->output->ask($this->input, '👉 first, you should set app domain: '));
-        if (!str_contains($appDomain, 'http') || !str_contains($appDomain, 'https')) {
+        if (!str_contains($appDomain, 'http')) {
             $appDomain = 'http://' . $appDomain;
         }
         $this->appDomain = $appDomain;
@@ -299,7 +299,7 @@ class Install extends Command
                 $this->output->info('项目启动后不要忘记设置 web/.env 里面的环境变量 VITE_BASE_URL');
                 $this->output->info('安装前端依赖成功，开始启动前端项目');
                 file_put_contents($webPath . DIRECTORY_SEPARATOR . '.env', <<<STR
-VITE_BASE_URL=$this->appDomain
+VITE_BASE_URL=$this->appDomain/api
 VITE_APP_NAME=后台管理
 STR
 );
