@@ -4,7 +4,7 @@ use think\migration\Seeder;
 
 use app\admin\model\Admin;
 
-class Init extends Seeder
+class InitSeeder extends Seeder
 {
     /**
      * Run Method.
