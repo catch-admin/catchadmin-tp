@@ -6,6 +6,7 @@ use app\admin\model\Admin as AdminModel;
 use app\admin\model\LogLogin;
 use app\admin\model\LogOperate;
 use think\response\Json;
+use app\admin\model\permissions\Departments;
 
 class Admin extends CatchController
 {
