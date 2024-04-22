@@ -1,6 +1,8 @@
 ## 介绍
-这是 TP 项目仓库，目前正在开发中...
+CatchAdmin Thinkphp8 版本仓库，Tp 版本完全前后端分离
 
+## 前端仓库
+[catchadmin前端项目](https://gitee.com/catchadmin/catch-admin-vue)
 
 ## 使用
 ```shell
