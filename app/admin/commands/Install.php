@@ -301,6 +301,7 @@ class Install extends Command
                 file_put_contents($webPath . DIRECTORY_SEPARATOR . '.env', <<<STR
 VITE_BASE_URL=$this->appDomain/api
 VITE_APP_NAME=后台管理
+VITE_GENERATE=true
 STR
 );
                 shell_exec("cd {$webPath} && yarn dev");

@@ -48,6 +48,8 @@ class Admin extends CatchController
     public function online():Json
     {
         if ($this->request->isGet()) {
+            $user = $this->user()->permissions();
+            $user->from = 'think';
             return $this->success($this->user()->permissions());
         }
 
@@ -56,14 +58,14 @@ class Admin extends CatchController
         );
     }
 
-    public function loginLog(LogLogin $logLogin)
+    public function loginLog(LogLogin $logLogin): Json
     {
         $admin = $this->user();
 
         return $this->success($logLogin->getUserLogBy($admin->isSuperAdmin() ? null : $admin->email));
     }
 
-    public function operateLog(LogOperate $logOperate)
+    public function operateLog(LogOperate $logOperate): Json
     {
         $scope = $this->request->get('scope', 'self');
 
