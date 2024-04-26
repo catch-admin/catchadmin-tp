@@ -17,6 +17,9 @@ abstract class FileGenerator
         if (str_contains($this->name,'\\')) {
             [$module, $name]  = explode('\\', $this->name);
             return [lcfirst($module), ucfirst($name)];
+        } elseif (str_contains($this->name,'/')) {
+            [$module, $name]  = explode('/', $this->name);
+            return [lcfirst($module), ucfirst($name)];
         } else {
             return [null, ucfirst($this->name)];
         }

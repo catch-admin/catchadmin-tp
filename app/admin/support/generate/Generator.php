@@ -10,28 +10,39 @@ class Generator
 
     protected string $table;
 
-    public function __construct(string $controllerName, $modelName, string $table = '')
+    protected array $schema;
+
+    public function __construct(string $controllerName, $modelName, string $table = '', $params = [])
     {
         $this->controllerName = $controllerName;
 
         $this->modelName = $modelName;
 
         $this->table = $table;
+
+        $this->schema = $params;
     }
 
     public function generate(): array
     {
-        $model = new Model($this->modelName);
+        $schema = new Schema();
+
+        $schema->setSchema($this->schema)->generate();
+
+        $model = new Model($this->modelName ?  : $this->table);
 
         $modelNamespace = $model->setTable($this->table)->generate();
 
-        $controller = new Controller($this->controllerName);
+        $controllerNamespace = '';
+        if ($this->controllerName) {
+            $controller = new Controller($this->controllerName);
 
-        $controllerNamespace = $controller->setModel($modelNamespace)->generate();
+            $controllerNamespace = $controller->setModel($modelNamespace)->generate();
 
-        $route = new Route('');
+            $route = new Route('');
 
-        $route->setController($controllerNamespace)->generate();
+            $route->setController($controllerNamespace)->generate();
+        }
 
         return [
             $controllerNamespace,
