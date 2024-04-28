@@ -2,8 +2,6 @@
 declare(strict_types=1);
 
 namespace app\admin\support;
-use think\facade\Cache;
-use think\facade\Db;
 use think\helper\Str;
 
 class Helper

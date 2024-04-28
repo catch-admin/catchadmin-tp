@@ -7,22 +7,26 @@ class Components implements OptionInterface
     public function get(): array
     {
         $module = request()->get('module');
-
+        $controller = lcfirst(request()->get('controller', ''));
         if (!$module) {
             return [];
         }
 
         // TODO: Implement get() method.
-        $webViewsPath = config('catch.web_path')  . 'src' . DIRECTORY_SEPARATOR . 'views';
+        $webViewsPath = config('catch.views_path');
 
         $components = [];
 
-        if (is_dir($path = $webViewsPath  . DIRECTORY_SEPARATOR . lcfirst($module) )) {
+        if (is_dir($path = $webViewsPath . ($this->isDefaultModule() ? $controller : lcfirst($module)) )) {
 
             $this->allVueFile($path, $components);
 
             foreach ($components as $k => $component) {
                 $c = str_replace('\\', '/', str_replace($path, '', $component));
+
+                if ($this->isDefaultModule() && $controller) {
+                    $c = '/'. $controller . $c;
+                }
 
                 $components[$k] = [
                     'label' => $c,
@@ -35,10 +39,14 @@ class Components implements OptionInterface
 
     }
 
-
-    protected function allVueFile($path, &$files = [])
+    protected function isDefaultModule(): bool
     {
-        $dirs =glob($path . DIRECTORY_SEPARATOR . '*');
+        return request()->get('module') === 'default';
+    }
+
+    protected function allVueFile($path, &$files = []): void
+    {
+        $dirs = glob($path . DIRECTORY_SEPARATOR . '*');
 
         foreach ($dirs as $dir) {
             if (is_dir($dir)) {

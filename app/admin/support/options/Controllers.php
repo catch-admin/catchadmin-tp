@@ -15,11 +15,15 @@ class Controllers implements OptionInterface
         }
 
         // TODO: Implement get() method.
-        if (is_dir($path = app_path('admin/controller/' . Request::get('module')))) {
+        if (is_dir($path = app_path('admin/controller/' . (Request::get('module') == 'default' ? '' : Request::get('module'))))) {
             $data = scandir($path);
             foreach ($data as $value){
                 if($value != '.' && $value != '..' && !is_dir($path . DIRECTORY_SEPARATOR .$value)){
                     $controllerName =  pathinfo($path . DIRECTORY_SEPARATOR .$value, PATHINFO_FILENAME);
+                    if (in_array($controllerName, $this->notContains())) {
+                        continue;
+                    }
+
                     $controller[] = [
                         'label' => $controllerName,
                         'value' => $controllerName,
@@ -29,5 +33,11 @@ class Controllers implements OptionInterface
         }
 
         return $controller;
+    }
+
+
+    protected function notContains(): array
+    {
+        return ['Auth', 'CatchController', 'Generate'];
     }
 }

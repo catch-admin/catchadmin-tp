@@ -1,6 +1,8 @@
 <?php
 namespace app\admin\support\generate;
 
+use think\facade\Log;
+
 abstract class FileGenerator
 {
     protected string $name;
@@ -37,5 +39,49 @@ abstract class FileGenerator
         }
 
         return false;
+    }
+
+    protected function getViewPath(): string
+    {
+        $viewPath = config('catch.views_path');
+        [$first, $second] = $this->parseName();
+        if ($first) {
+            $viewPath = $viewPath . lcfirst($first).DIRECTORY_SEPARATOR.lcfirst($second);
+        } else {
+            $viewPath = $viewPath . lcfirst($second);
+        }
+
+        if (!is_dir($viewPath)) {
+            mkdir($viewPath, 0777, true);
+        }
+
+        return $viewPath;
+    }
+
+    /**
+     * form components
+     *
+     * @return array
+     */
+    protected function formComponents(): array
+    {
+        $components = [];
+
+        foreach (glob(
+                     $this->getFormItemStub()
+                 ) as $stub) {
+            $components[pathinfo($stub, PATHINFO_FILENAME)] = file_get_contents($stub);
+        }
+
+        return $components;
+    }
+
+    public function parseComment($comment)
+    {
+        if (str_contains($comment, ':')) {
+            return explode(': ', $comment)[0];
+        }
+
+        return $comment;
     }
 }

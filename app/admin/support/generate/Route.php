@@ -36,7 +36,7 @@ class Route extends FileGenerator
                     new Node\Name('Route'),
                     new Node\Identifier('resource'),
                     [
-                        new Node\Arg(new Node\Scalar\String_(lcfirst($this->controller))),
+                        new Node\Arg(new Node\Scalar\String_($this->getRouteApi())),
                         new Node\Arg(new Node\Expr\ClassConstFetch(
                             new Node\Name($this->controller),
                             new Node\Identifier('Class')
@@ -86,5 +86,19 @@ class Route extends FileGenerator
         $this->controller = end($controller);
 
         return $this;
+    }
+
+    public function getRouteApi(): string
+    {
+        $controller = explode('\\', $this->controllerNamespace);
+        $last = end($controller);
+
+        $preLast = end($controller);
+
+        if (strtolower($preLast) == 'controller') {
+            return '/' . lcfirst($last);
+        }
+
+        return '/' . lcfirst($preLast) . '/' . lcfirst($last);
     }
 }
