@@ -4,6 +4,9 @@ return [
     // 前端项目目录
     'web_path' => root_path('web'),
 
+    // 前端视图目录
+    'views_path' => root_path('web'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR),
+
     // 跨域头信息规则
     'cross_headers' => [
         'Access-Control-Allow-Origin' => '*',
