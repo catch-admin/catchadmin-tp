@@ -42,7 +42,7 @@ class Curd extends Command
             $controller = $model;
         }
 
-        $generator = new Generator($model, $controller, $table);
+        $generator = new Generator($controller, $model, $table);
 
         $res = $generator->generate();
 
