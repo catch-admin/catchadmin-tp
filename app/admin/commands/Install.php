@@ -43,46 +43,40 @@ class Install extends Command
 
     protected function detectionEnvironment(): void
     {
-        $this->output->info('environment begin to check...');
+        $this->output->info('环境检测...');
 
         if (version_compare(PHP_VERSION, '8.0.0', '<')) {
             $this->output->error('php version should >= 8.0.0');
             exit();
         }
 
-        $this->output->info('php version ' . PHP_VERSION);
+        $this->output->info('php 版本 ' . PHP_VERSION);
 
         if (!extension_loaded('mbstring')) {
             $this->output->error('mbstring extension not install');exit();
         }
-        $this->output->info('mbstring extension is installed');
 
         if (!extension_loaded('json')) {
             $this->output->error('json extension not install');
             exit();
         }
-        $this->output->info('json extension is installed');
 
         if (!extension_loaded('openssl')) {
             $this->output->error('openssl extension not install');
             exit();
         }
-        $this->output->info('openssl extension is installed');
 
         if (!extension_loaded('pdo')) {
             $this->output->error('pdo extension not install');
             exit();
         }
-        $this->output->info('pdo extension is installed');
 
         if (!extension_loaded('xml')) {
             $this->output->error('xml extension not install');
             exit();
         }
 
-        $this->output->info('xml extension is installed');
-
-        $this->output->info('🎉 environment checking finished');
+        $this->output->info('🎉 环境检测完成');
     }
 
 
@@ -93,31 +87,35 @@ class Install extends Command
         }
 
         // 设置 app domain
-        $appDomain = strtolower($this->output->ask($this->input, '👉 first, you should set app domain: '));
-        if (!str_contains($appDomain, 'http')) {
-            $appDomain = 'http://' . $appDomain;
+        $appDomain = strtolower($this->output->ask($this->input, '👉首先需要设置后端访问的域名(开发环境例如 http://127.0.0.1:8000): '));
+        if ($appDomain) {
+            $appDomain = 'http://127.0.0.1:8000';
+        } else {
+            if (!str_contains($appDomain, 'http')) {
+                $appDomain = 'http://' . $appDomain;
+            }
         }
         $this->appDomain = $appDomain;
 
-        $answer = strtolower($this->output->ask($this->input, '🤔️ Did You Need to Set Database information? (Y/N): '));
+        $answer = strtolower($this->output->ask($this->input, '🤔️ 设置数据库信息? (Y/N): '));
 
         if ($answer === 'y' || $answer === 'yes') {
-            $charset = $this->output->ask($this->input, '👉 please input database charset, default (utf8mb4):') ? : 'utf8mb4';
+            $charset = $this->output->ask($this->input, '👉 设置数据库编码集, 默认 (utf8mb4):') ?: 'utf8mb4';
             $database = '';
             while (!$database) {
-                $database = $this->output->ask($this->input, '👉 please input database name: ');
+                $database = $this->output->ask($this->input, '👉 设置数据库名称: ');
                 if ($database) {
                     break;
                 }
             }
-            $host = $this->output->ask($this->input, '👉 please input database host, default (127.0.0.1):') ? : '127.0.0.1';
-            $port = $this->output->ask($this->input, '👉 please input database host port, default (3306):') ? : '3306';
+            $host = $this->output->ask($this->input, '👉 设置数据库 Host, 默认 (127.0.0.1):') ?: '127.0.0.1';
+            $port = $this->output->ask($this->input, '👉 设置数据库端口号, 默认 (3306):') ?: '3306';
             // $prefix = $this->output->ask($this->input, '👉 please input table prefix, default (null):') ? : '';
-            $username = $this->output->ask($this->input, '👉 please input database username default (root): ') ? : 'root';
+            $username = $this->output->ask($this->input, '👉设置数据库用户名，默认 (root): ') ?: 'root';
             $password = '';
             $tryTimes = 0;
             while (!$password) {
-                $password = $this->output->ask($this->input, '👉 please input database password: ');
+                $password = $this->output->ask($this->input, '👉 设置数据库密码: ');
                 if ($password) {
                     break;
                 }
@@ -211,13 +209,13 @@ class Install extends Command
 
 
             if ($this->getEnvFile()) {
-                $this->output->info('env file has been generated');
+                $this->output->info('env 环境变量文件已被创建');
             }
             if ((new \mysqli($host, $username, $password, null, $port))->query(sprintf('CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARSET %s COLLATE %s_general_ci;',
                 $database, $charset, $charset))) {
-                $this->output->info(sprintf('🎉 create database %s successfully', $database));
+                $this->output->info(sprintf('🎉创建数据库 %s 成功', $database));
             } else {
-                $this->output->warning(sprintf('create database %s failed，you need create database first by yourself', $database));
+                $this->output->warning(sprintf('创建数据库 %s 失败，你需要手动创建对应数据库', $database));
             }
         } catch (\Exception $e) {
             $this->output->error($e->getMessage());
@@ -235,9 +233,12 @@ class Install extends Command
 
     protected function project()
     {
+        $domain = explode($this->appDomain, ':');
+        $port = end($domain);
+
         $year = date('Y');
 
-        $this->output->info('🎉 project is installed, welcome!');
+        $this->output->info('🎉 项目已安装, welcome!');
 
         $this->output->info(sprintf('
  /-------------------- welcome to use -------------------------\                     
@@ -249,8 +250,9 @@ class Install extends Command
 |                                                              |   
  \ __ __ __ __ _ __ _ __ enjoy it ! _ __ __ __ __ __ __ ___ _ @ 2017 ～ %s
  初始账号: catch@admin.com
- 初始密码: catchadmin                                             
-', $year));
+ 初始密码: catchadmin
+ 启动: php think run --port=%d                                      
+', $year, intval($port)));
         exit(0);
     }
 
