@@ -233,7 +233,7 @@ class Install extends Command
 
     protected function project()
     {
-        $domain = explode($this->appDomain, ':');
+        $domain = explode(':', $this->appDomain);
         $port = end($domain);
 
         $year = date('Y');
