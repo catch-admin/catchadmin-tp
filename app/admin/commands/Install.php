@@ -88,7 +88,7 @@ class Install extends Command
 
         // 设置 app domain
         $appDomain = strtolower($this->output->ask($this->input, '👉首先需要设置后端访问的域名(开发环境例如 http://127.0.0.1:8000): '));
-        if ($appDomain) {
+        if (!$appDomain) {
             $appDomain = 'http://127.0.0.1:8000';
         } else {
             if (!str_contains($appDomain, 'http')) {
