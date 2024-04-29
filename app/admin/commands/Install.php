@@ -251,7 +251,8 @@ class Install extends Command
  \ __ __ __ __ _ __ _ __ enjoy it ! _ __ __ __ __ __ __ ___ _ @ 2017 ～ %s
  初始账号: catch@admin.com
  初始密码: catchadmin
- 启动: php think run --port=%d                                      
+ 后端启动: php think run --port=%d
+ 前端启动: cd web && yarn dev                                      
 ', $year, intval($port)));
         exit(0);
     }
@@ -306,7 +307,7 @@ VITE_APP_NAME=后台管理
 VITE_GENERATE=true
 STR
 );
-                shell_exec("cd {$webPath} && yarn dev");
+                // shell_exec("cd {$webPath} && yarn dev");
             } else {
                 $this->output->error('下载前端项目失败, 请到该仓库下载 https://gitee.com/catchadmin/catch-admin-vue');
             }
